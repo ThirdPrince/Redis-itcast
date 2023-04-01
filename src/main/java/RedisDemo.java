@@ -2,7 +2,6 @@ import org.junit.Test;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -13,6 +12,19 @@ import java.util.Set;
  */
 public class RedisDemo {
 
+
+    @Test
+    public void test02(){
+        Jedis jedis = new Jedis();
+        jedis.select(0);
+        Map<String,String> user  = jedis.hgetAll("user");
+        Set<String> keySets = user.keySet();
+        for(String key :keySets){
+            System.out.println("key = "+key+"::value="+user.get(key));
+        }
+
+        jedis.close();
+    }
     /**
      * hset
      */
@@ -22,7 +34,6 @@ public class RedisDemo {
        jedis.hset("user","name","lisi");
        jedis.hset("user","age","23");
        jedis.hset("user","gender","male");
-
         String name =  jedis.hget("user","name");
         System.out.println(name);
         Map<String,String> user  = jedis.hgetAll("user");
@@ -105,9 +116,51 @@ public class RedisDemo {
    @Test
    public void test08(){
        Jedis jedis = JedisPoolUtils.getJedis();
-       jedis.set("hello","heihei");
+       jedis.select(1);
+
+       jedis.set("hello1","heihei1");
        jedis.close();
 
 
    }
+
+    @Test
+    public void test09(){
+        Jedis jedis = JedisPoolUtils.getJedis();
+        jedis.flushDB();
+        jedis.close();
+
+    }
+
+    @Test
+    public void test10(){
+        Jedis jedis = JedisPoolUtils.getJedis();
+        jedis.select(0);
+        String hello1 = jedis.get("hello1");
+        System.out.println(hello1);
+
+        jedis.close();
+
+    }
+
+    @Test
+    public void test11(){
+        Jedis jedis = JedisPoolUtils.getJedis();
+        jedis.select(1);
+         jedis.set("key1","20");
+         jedis.expire("key1",10);
+        jedis.close();
+
+    }
+
+    @Test
+    public void test12(){
+        Jedis jedis = JedisPoolUtils.getJedis();
+        jedis.select(1);
+        String key1 = jedis.get("key1");
+        System.out.println(key1);
+        //jedis.expire("key1",10);
+        jedis.close();
+
+    }
 }
